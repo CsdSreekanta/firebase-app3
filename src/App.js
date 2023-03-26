@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 
 const auth = getAuth(app);
@@ -47,7 +47,18 @@ function App() {
 
     setValidated(true);
     setError('')
-    createUserWithEmailAndPassword(auth, email, password)
+    if(registered){
+      signInWithEmailAndPassword(auth, email, password)
+      .then((result)=>{
+        const user = result.user
+        console.log(user)
+      })
+      .catch((error)=>{
+        console.error(error)
+      })
+    }
+    else{
+      createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         const user = result.user;
         setEmail('')
@@ -58,6 +69,7 @@ function App() {
         setError(error.message)
         console.error(error);
       });
+    }
     event.preventDefault();
     // console.log('working', email, password)
   };
@@ -98,7 +110,7 @@ function App() {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check onChange={handleRegisteredChange} type="checkbox" label="Already Registered" />
+            <Form.Check onChange={handleRegisteredChange} type="checkbox" label="Already Register" />
           </Form.Group>
           <h5 className="text-danger">{error}</h5>
           <Button variant="primary" type="submit">
